@@ -1,0 +1,32 @@
+---
+# @tag docker-container-prereq-all:description: Ensure all pre-requisites are installed
+# @tag docker-container-prereq-watchtower:description: Ensure all pre-requisites for watchtower are installed
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/prereq.yml"
+  tags:
+    - docker-container-prereq-all
+    - docker-container-prereq-watchtower
+
+# @tag docker-container-setup-all:description: Run setup task for all containers.
+# @tag docker-container-setup-watchtower:description: Run setup task for watchtower.
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup.yml"
+  tags:
+    - docker-container-setup-all
+    - docker-container-setup-watchtower
+
+# @tag docker-container-remove-all:description: Remove all containers.
+# @tag docker-container-remove-watchtower:description: Remove watchtower.
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/remove.yml"
+  tags:
+    - never
+    - docker-container-remove-all
+    - docker-container-remove-watchtower
+    - docker-container-purge-all
+    - docker-container-purge-watchtower
+
+# @tag docker-container-purge-all:description: Remove all containers and delete volume mounts.
+# @tag docker-container-purge-watchtower:description: Remove watchtower and delete volume mounts.
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/purge.yml"
+  tags:
+    - never
+    - docker-container-purge-all
+    - docker-container-purge-watchtower

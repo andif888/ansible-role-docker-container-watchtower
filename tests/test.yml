@@ -1,0 +1,63 @@
+---
+- hosts: localhost
+  remote_user: root
+  vars:
+    docker_container__base__dns_domain: "acme.org"
+    docker_container_watchtower_mailer_host: "mail.{{ docker_container__base__dns_domain }}"
+    docker_container_watchtower_mailer_from: "no-reply@{{ docker_container__base__dns_domain }}"
+    docker_container_watchtower_mailer_username: "no-reply@{{ docker_container__base__dns_domain }}"
+    docker_container_watchtower_mailer_password: "somepassword"
+
+    docker_network_traefik_name: "traefik_proxy_net"
+
+    docker_container_watchtower_server_domain: "{{ docker_container_watchtower_name }}.{{ docker_container__base__dns_domain }}"
+    
+    docker_container_watchtower_env:
+      APP_NAME: "watchtower: git"
+      RUN_USER: "git"
+      watchtower__log__ROOT_PATH: "/data/watchtower/log"
+      watchtower__repository__ROOT: "/data/git/repositories"
+      watchtower__server__DOMAIN: "{{ docker_container_watchtower_server_domain }}"
+      watchtower__server__ROOT_URL: "https://{{ docker_container_watchtower_server_domain }}"
+      watchtower__server__HTTP_PORT: "3000"
+      watchtower__service__DISABLE_REGISTRATION: "true"
+      watchtower__mailer__ENABLED: "true"
+      watchtower__mailer__FROM: "{{ docker_container_watchtower_mailer_from }}"
+      watchtower__mailer__MAILER_TYPE: "smtp"
+      watchtower__mailer__HOST: "{{ docker_container_watchtower_mailer_host }}"
+      watchtower__mailer__IS_TLS: "true"
+      watchtower__mailer__USER: "{{ docker_container_watchtower_mailer_username }}"
+      watchtower__mailer__PASSWD: "{{ docker_container_watchtower_mailer_password }}"
+      watchtower__database__DB_TYPE: "sqlite3"
+      watchtower__database__PATH: "/data/watchtower/watchtower.db"
+      watchtower__webhook__SKIP_TLS_VERIFY: "true"
+      watchtower__webhook__ALLOWED_HOST_LIST: "*"
+
+    docker_container_watchtower_labels:
+      traefik.enable: "true"
+      traefik.http.routers.watchtower.rule: "Host(`{{ docker_container_watchtower_server_domain }}`)"
+      traefik.http.routers.watchtower.entrypoints: http
+      traefik.http.routers.watchtower.service: watchtower
+      #traefik.http.routers.watchtower.middlewares: https_redirect_permanent@file
+      # HTTPS
+      traefik.http.routers.watchtower_ssl.rule: "Host(`{{ docker_container_watchtower_server_domain }}`)"
+      traefik.http.routers.watchtower_ssl.entrypoints: https
+      traefik.http.routers.watchtower_ssl.service: watchtower
+      #traefik.http.routers.watchtower_ssl.tls: "true"
+      # traefik.http.routers.watchtower_ssl.tls.certResolver: le
+      traefik.http.routers.watchtower_ssl.tls.options: nosni@file
+      # traefik.http.routers.watchtower_ssl.middlewares: "hsts@file"
+      # Service
+      traefik.http.services.watchtower.loadbalancer.server.port: "3000"
+
+    docker_container_watchtower_volumes:
+      - "{{ docker_container_watchtower_volume_dir }}/data:/data"
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+
+    docker_container_watchtower_networks:
+      - name: "{{ docker_network_watchtower_name }}"
+      - name: "{{ docker_network_traefik_name }}"
+
+  roles:
+    - ansible-role-docker-container-watchtower

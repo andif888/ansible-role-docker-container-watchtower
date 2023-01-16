@@ -1,0 +1,180 @@
+---
+# defaults file for ansible-role-docker-container-watchtower
+
+# @var docker_container_watchtower_debug:description: Enable debug mode with verbose logging.
+docker_container_watchtower_debug: "false"
+
+# @var docker_container_watchtower_label_enable:description: >
+# Update containers that have a com.centurylinklabs.watchtower.enable label set to true.
+# @end
+docker_container_watchtower_label_enable: "false"
+
+# @var docker_container_watchtower_log_level:description: >
+# The maximum log level that will be written to STDERR (shown in docker log when used in a container).
+# @end
+docker_container_watchtower_log_level: "info"
+
+# @var docker_container_watchtower_monitor_only:description: >
+# Will only monitor for new images, send notifications and invoke 
+# the pre-check/post-check hooks, but will not update the containers.
+# @end
+docker_container_watchtower_monitor_only: "true"
+
+# @var docker_container_watchtower_notifications_hostname:description: >
+# Custom hostname specified in subject/title. Useful to override the operating system hostname
+# @end
+# docker_container_watchtower_notifications_hostname: "{{ inventory_hostname_short }}"
+
+# @var docker_container_watchtower_notifications_title_tag:description: >
+# Custom hostname specified in subject/title. Useful to override the operating system hostname
+# @end
+# docker_container_watchtower_notifications_title_tag: "test1"
+
+# @var docker_container_watchtower_notifications_level:description: >
+# Controls the log level which is used for the notifications. 
+# If omitted, the default log level is info. Possible values are: panic, fatal, error, warn, info, debug or trace.
+# @end
+docker_container_watchtower_notifications_level: "info"
+
+# @var docker_container_watchtower_notification_url:description: >
+# The shoutrrr service URL to be used. This option can also reference a file, 
+# in which case the contents of the file are used.
+# Go to https://containrrr.dev/shoutrrr/v0.6/services/overview to learn more about the 
+# different service URLs you can use. You can define multiple services by space separating the URLs.
+# Example:
+# smtp://username:password@host:port/?from=fromAddress&to=recipient1[,recipient2,...]
+# 
+# @end
+docker_container_watchtower_notification_url: ""
+
+# @var docker_container_watchtower_schedule:description: >
+# Cron expression in 6 fields (rather than the traditional 5) which 
+# defines when and how often to check for new images.
+# @end
+docker_container_watchtower_schedule: "* 1 2 * * *"
+
+# @var docker_container_watchtower_timezone:description: >
+# Sets the time zone to be used by WatchTower's logs and the optional Cron scheduling argument (--schedule).
+# @end
+docker_container_watchtower_timezone: "UTC"
+
+# ------------
+# Docker image
+# ------------
+
+# @var docker_image_watchtower_name:description: Repository path and tag for the container image.
+docker_image_watchtower_name: "containrrr/watchtower:latest"
+
+# @var docker_image_watchtower_pull:description: Indicate to always pull the docker image.
+docker_image_watchtower_pull: no
+
+# ----------------
+# Docker container
+# ----------------
+
+# @var docker_container_watchtower_name:description: Name for the container
+docker_container_watchtower_name: "watchtower"
+
+# @var docker_container_watchtower_image:description: >
+# Repository path and tag used to create the container. 
+# If an image is not found or pull is true, the image will be pulled from the registry. 
+# If no tag is included, latest will be used.
+# @end
+docker_container_watchtower_image: "{{ docker_image_watchtower_name }}"
+
+# @var docker_container_watchtower_volume_dir:description: >
+# Volume mount host directory, where Treafik config files are stored.
+# @end
+docker_container_watchtower_volume_dir: "{{ docker_container__base__volume_dir }}/{{ docker_container_watchtower_name }}"
+
+# @var docker_container_watchtower_env:description: >
+# Dictionery of key,value pairs for docker 
+# environment variables to configure watchtower. 
+# 
+# Example:
+#
+# ```yaml
+#
+# docker_container_watchtower_env:
+#
+#   WATCHTOWER_MONITOR_ONLY: "true"
+#
+# ```
+# @end
+docker_container_watchtower_env:
+  WATCHTOWER_DEBUG: "{{ docker_container_watchtower_debug }}"
+  WATCHTOWER_LABEL_ENABLE: "{{ docker_container_watchtower_label_enable }}"
+  WATCHTOWER_LOG_LEVEL: "{{ docker_container_watchtower_log_level }}"
+  WATCHTOWER_MONITOR_ONLY: "{{ docker_container_watchtower_monitor_only }}"
+  WATCHTOWER_NOTIFICATIONS_HOSTNAME: "{{ docker_container_watchtower_notifications_hostname | default(omit) }}"
+  WATCHTOWER_NOTIFICATIONS_LEVEL: "{{ docker_container_watchtower_notifications_level }}"
+  WATCHTOWER_NOTIFICATION_TITLE_TAG: "{{ docker_container_watchtower_notifications_title_tag | default(omit) }}"
+  WATCHTOWER_NOTIFICATION_URL: "{{ docker_container_watchtower_notification_url }}"
+  WATCHTOWER_SCHEDULE: "{{ docker_container_watchtower_schedule }}"
+  TZ: "{{ docker_container_watchtower_timezone }}"
+
+
+# @var docker_container_watchtower_volumes:description: >
+# List of volumes to mount within the container.
+# @end
+docker_container_watchtower_volumes:
+  - "/var/run/docker.sock:/var/run/docker.sock"
+
+# @var docker_container_watchtower_labels:description: >
+# Dictionary of key value pairs for container labels. 
+# 
+# Example:
+#
+# ```yaml
+# 
+# docker_container_watchtower_labels:
+#
+#   traefik.enable: "true"
+# 
+# ```
+# 
+# @end
+docker_container_watchtower_labels: {}
+
+# @var docker_container_watchtower_networks:description: >
+# List of networks the container belongs to.
+# @end
+docker_container_watchtower_networks:
+  - name: "{{ docker_network_watchtower_name }}"
+
+# @var docker_container_watchtower_ports:description: >
+# List of ports to publish from the container to the host.
+# @end
+docker_container_watchtower_ports: []
+
+# docker_container_watchtower_auto_remove: no 
+# docker_container_watchtower_detach: yes 
+# docker_container_watchtower_env_file: "{{ docker_container_watchtower_volume_dir }}/.env"
+# docker_container_watchtower_init: no 
+# docker_container_watchtower_interactive: no 
+# docker_container_watchtower_keep_volumes: yes
+# docker_container_watchtower_memory: "0"
+# docker_container_watchtower_paused: no 
+# docker_container_watchtower_privileged: no 
+# docker_container_watchtower_pull: no
+# docker_container_watchtower_purge_networks: yes 
+# docker_container_watchtower_read_only: no 
+# docker_container_watchtower_recreate: no
+# docker_container_watchtower_restart: no
+# docker_container_watchtower_restart_policy: always 
+# docker_container_watchtower_state: started
+# docker_container_watchtower_tty: no 
+# docker_container_watchtower_networks_cli_compatible: yes 
+
+# --------------
+# Docker network
+# --------------
+
+# @var docker_network_watchtower_name:description: >
+# Name of the docker network created for watchtower.
+# @end
+docker_network_watchtower_name: "{{ docker_container_watchtower_name }}_backend"
+# docker_network_watchtower_driver: bridge
+# docker_network_watchtower_attachable: yes
+# docker_network_watchtower_enable_ipv6: no
+# docker_network_watchtower_internal: no
