@@ -147,6 +147,15 @@ docker_container_watchtower_networks:
 # @end
 docker_container_watchtower_ports: []
 
+# @var docker_container_watchtower_comparisons:description: >
+# Allows to specify how properties of existing containers are compared with module options 
+# to decide whether the container should be recreated / updated or not.
+# @end
+docker_container_watchtower_comparisons:
+  image: strict
+  env: strict
+  volumes: strict
+
 # docker_container_watchtower_auto_remove: no 
 # docker_container_watchtower_detach: yes 
 # docker_container_watchtower_env_file: "{{ docker_container_watchtower_volume_dir }}/.env"
@@ -157,7 +166,6 @@ docker_container_watchtower_ports: []
 # docker_container_watchtower_paused: no 
 # docker_container_watchtower_privileged: no 
 # docker_container_watchtower_pull: no
-# docker_container_watchtower_purge_networks: yes 
 # docker_container_watchtower_read_only: no 
 # docker_container_watchtower_recreate: no
 # docker_container_watchtower_restart: no
